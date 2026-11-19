@@ -1,7 +1,15 @@
 cmake_minimum_required(VERSION 3.13)
 project(daVorbis CXX)
 
-set(VECMATH_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../.. CACHE PATH "The folder that holds vecmath/")
+set(DAVORBIS_VECMATH_DEFAULT ${CMAKE_CURRENT_SOURCE_DIR}/external)
+if(NOT EXISTS ${DAVORBIS_VECMATH_DEFAULT}/vecmath/dag_vecMath.h)
+  set(DAVORBIS_VECMATH_DEFAULT ${CMAKE_CURRENT_SOURCE_DIR}/../../..)
+endif()
+set(VECMATH_INCLUDE_DIR ${DAVORBIS_VECMATH_DEFAULT} CACHE PATH "The folder that holds vecmath/")
+if(NOT EXISTS ${VECMATH_INCLUDE_DIR}/vecmath/dag_vecMath.h)
+  message(FATAL_ERROR "No vecmath/dag_vecMath.h in VECMATH_INCLUDE_DIR (${VECMATH_INCLUDE_DIR}). "
+    "Run 'git submodule update --init' or set VECMATH_INCLUDE_DIR to the folder that holds vecmath/.")
+endif()
 set(DAVORBIS_CONFIG_DIR ${CMAKE_CURRENT_SOURCE_DIR}/config/std CACHE PATH "The folder of daVorbisConfig.h")
 
 add_library(daVorbis STATIC src/daVorbisSetup.cpp src/daVorbisFloorTable.cpp src/daVorbisDecodeBase.cpp)

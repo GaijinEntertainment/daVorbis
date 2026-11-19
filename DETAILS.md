@@ -75,19 +75,21 @@ and each value gives it.
 ## Build
 
 The folder builds with CMake 3.13 or later as the static library `daVorbis` (C++17). Its one dependency
-is vecmath, the header-only SIMD library of the Dagor engine: the build needs the folder that holds
-`vecmath/` (`prog/1stPartyLibs` in the Dagor engine).
+is vecmath, the header-only SIMD library of the Dagor engine, in the git submodule `external/vecmath`. A
+clone with `--recursive` builds with no options; a clone without it needs `git submodule update --init`.
 
 ```
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DVECMATH_INCLUDE_DIR=<the folder that holds vecmath>
+git clone --recursive https://github.com/GaijinEntertainment/daVorbis.git
+cmake -S daVorbis -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build --config Release
 ```
 
 A project that has its own CMake build adds the folder with `add_subdirectory` and links `daVorbis`; the
 public include folder comes with it.
 
-- `VECMATH_INCLUDE_DIR`: the folder that holds `vecmath/`. Default: `../../..`, the place of vecmath when
-  the folder is inside the engine tree.
+- `VECMATH_INCLUDE_DIR`: the folder that holds `vecmath/`. Default: `external`, the submodule. When the
+  submodule is empty, `../../..`, the place of vecmath when the folder is inside the engine tree
+  (`prog/1stPartyLibs`). The configure stops with an error when that folder has no vecmath.
 - `DAVORBIS_CONFIG_DIR`: the folder of `daVorbisConfig.h`. Default: `config/std`. A build that uses EASTL
   sets `<daVorbis folder>/config/eastl` and has the EASTL include folder on its include path.
 - Each target builds `src/daVorbisSetup.cpp`, `src/daVorbisFloorTable.cpp` and `src/daVorbisDecodeBase.cpp`.

@@ -12,15 +12,20 @@ of C++17. It decodes the raw Vorbis packets that game sound banks store, and it 
 - **No allocation, no threads, no files.** The caller gives all memory, and each call states its memory size.
 - **SSE, AVX and AVX2**, picked at run time on a PC, and **NEON** on arm64.
 
-Licence: BSD 3-Clause. The only dependency is
-[vecmath](https://github.com/GaijinEntertainment/DagorEngine/tree/main/prog/1stPartyLibs/vecmath), the
-header-only SIMD library of the Dagor engine. The files, the build and the full numbers are in
-[DETAILS.md](DETAILS.md).
+Licence: BSD 3-Clause. The only dependency is [vecmath](https://github.com/GaijinEntertainment/vecmath),
+the header-only SIMD library of the Dagor engine, as a git submodule. The files, the build and the full
+numbers are in [DETAILS.md](DETAILS.md).
 
 ## Speed
 
 Decode time to float, nanoseconds for each frame of one channel, one thread. The streams are 164 Vorbis
-samples of game sound banks (14 setups, 8 to 48 kHz, 250 million channel-frames).
+samples of game sound banks (14 setups, 8 to 48 kHz, 250 million channel-frames). The chart shows the stereo
+column of the table.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/speed-dark.svg">
+  <img src="docs/speed-light.svg" width="800" alt="Decode time in ns per channel-frame, stereo, one thread. Intel Core i9-13980HX: daVorbis 1.76, stb_vorbis 7.60, libvorbis 9.58. Apple M4 Pro: daVorbis 1.56, stb_vorbis 4.85, libvorbis 7.40.">
+</picture>
 
 | Decoder | Mono | Stereo | 4 channels |
 |---|---|---|---|
@@ -71,6 +76,17 @@ That is far under what any ear can hear: the difference is under one step of 16-
    and after, and only the middle half of the output is computed: the outer quarters are mirrors.
 5. **Memory that the cache likes.** The work vectors of two channels are not a multiple of 4 KiB apart, so
    a load does not wait for a store at the same low address bits.
+
+## Build
+
+```
+git clone --recursive https://github.com/GaijinEntertainment/daVorbis.git
+cmake -S daVorbis -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build --config Release
+```
+
+A project with its own CMake build adds the folder with `add_subdirectory` and links `daVorbis`. A clone
+made without `--recursive` needs `git submodule update --init` before the build.
 
 ## Use
 

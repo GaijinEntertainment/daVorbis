@@ -1,0 +1,3 @@
+[submodule "external/vecmath"]
+	path = external/vecmath
+	url = https://github.com/GaijinEntertainment/vecmath.git
